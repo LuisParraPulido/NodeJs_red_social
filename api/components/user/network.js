@@ -8,6 +8,8 @@ const router = express.Router();
 
 //Routes
 router.get('/', list)
+router.post('/follow/:id', secure('follow'), follow);
+router.get('/:id/following', following);
 router.get('/:id', get)
 router.post('/', upsert)
 router.put('/', secure('update'), upsert)
@@ -18,7 +20,9 @@ function list (req, res, next) {
     .then((list) => {
       response.success(req, res, list, 200);
     })
-    .catch(next)
+    .catch((err) => {
+      response.error(req, res, err.message, 500);
+    })
 }
 
 function get (req, res) {
@@ -26,13 +30,33 @@ function get (req, res) {
     .then((user) => {
       response.success(req, res, user, 200);
     })
-    .catch(next)
+    .catch((err) => {
+      response.error(req, res, err.message, 500);
+    });
 }
 
 function upsert (req, res) {
   Controller.upsert(req.body)
     .then((user) => {
       response.success(req, res, user, 201);
+    })
+    .catch((err) => {
+      response.error(req, res, err.message, 500)
+    })
+}
+
+function follow(req, res, next) {
+  Controller.follow(req.user.id, req.params.id)
+    .then(data => {
+      response.success(req, res, data, 201);
+    })
+    .catch(next);
+}
+
+function following(req, res, next) {
+  return Controller.following(req.params.id)
+    .then((data) => {
+      return response.success(req, res, data, 200);
     })
     .catch(next)
 }
