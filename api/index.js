@@ -23,5 +23,5 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 app.use(errors);
 
 app.listen(config.api.port, () => {
-    console.log('Api escuchando en el puerto ', config.api.port);
+    console.log('Api listening in port: ', config.api.port);
 });
